@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'config.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Supabase.initialize(
+    url: Config.supabaseUrl,
+    anonKey: Config.supabaseAnonKey,
+  );
+  
   runApp(const MyApp());
 }
 
@@ -55,16 +64,49 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final _supabase = Supabase.instance.client;
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  Future<void> _loadCounter() async {
+    try {
+      final response = await _supabase
+          .from('counters')
+          .select()
+          .eq('id', 1)
+          .single();
+      
+      if (response != null) {
+        setState(() {
+          _counter = response['count'] ?? 0;
+        });
+      }
+    } catch (e) {
+      // If no counter exists yet, create one
+      await _supabase.from('counters').insert({
+        'id': 1,
+        'count': 0,
+      });
+    }
+  }
+
+  Future<void> _incrementCounter() async {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
+    
+    try {
+      await _supabase
+          .from('counters')
+          .update({'count': _counter})
+          .eq('id', 1);
+    } catch (e) {
+      print('Error updating counter: $e');
+    }
   }
 
   @override
