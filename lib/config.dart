@@ -1,4 +1,14 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+/// Configuration class that provides access to environment variables.
+/// This class uses flutter_dotenv to securely access Supabase credentials
+/// stored in the .env file.
 class Config {
-  static const String supabaseUrl = 'https://vfoicylmtasvhrnmdnki.supabase.co';
-  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmb2ljeWxtdGFzdmhybm1kbmtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5MDM0ODUsImV4cCI6MjA2MjQ3OTQ4NX0.flMKhV42hhPFXQQjjM78L45Iekj34YfZKbntz__RiLg';
+  /// Gets the Supabase project URL from environment variables.
+  /// Returns an empty string if the URL is not found.
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  
+  /// Gets the Supabase anonymous key from environment variables.
+  /// Returns an empty string if the key is not found.
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 } 
