@@ -1,0 +1,6 @@
+//use this as a reference to the original .env file located at the '..ISN/DEVELOPMENT/' folder
+//this .env file is already saved in my project's root file on the same level as pubspec.yaml 
+
+
+SUPABASE_URL=https://vfoicylmtasvhrnmdnki.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmb2ljeWxtdGFzdmhybm1kbmtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5MDM0ODUsImV4cCI6MjA2MjQ3OTQ4NX0.flMKhV42hhPFXQQjjM78L45Iekj34YfZKbntz__RiLg

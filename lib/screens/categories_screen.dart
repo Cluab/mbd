@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../services/category_service.dart';
+import '../widgets/loading_indicator.dart';
+import '../widgets/error_display.dart';
 
 /// A screen that displays a list of categories and allows creating new ones.
 /// This screen demonstrates the integration with Supabase for category management.
@@ -66,66 +68,79 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Error: $_error',
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadCategories,
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                )
-              : _categories.isEmpty
-                  ? const Center(
-                      child: Text('No categories found'),
-                    )
-                  : ListView.builder(
-                      itemCount: _categories.length,
-                      itemBuilder: (context, index) {
-                        final category = _categories[index];
-                        return ListTile(
-                          title: Text(category.name),
-                          subtitle: category.description != null
-                              ? Text(category.description!)
-                              : null,
-                          trailing: Text(
-                            'Created: ${category.createdAt.toString().split('.')[0]}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        );
-                      },
-                    ),
-      // Floating action button to create a new test category
+      body: _buildBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try {
-            await _categoryService.createCategory(
-              name: 'Test Category ${DateTime.now().millisecondsSinceEpoch}',
-              description: 'This is a test category',
-            );
-            _loadCategories(); // Reload the list after creating
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error creating category: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
+        onPressed: _createTestCategory,
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  /// Builds the main body of the screen based on the current state
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const LoadingIndicator(message: 'Loading categories...');
+    }
+
+    if (_error != null) {
+      return ErrorDisplay(
+        message: _error!,
+        onRetry: _loadCategories,
+      );
+    }
+
+    if (_categories.isEmpty) {
+      return const Center(
+        child: Text('No categories found'),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: _categories.length,
+      itemBuilder: (context, index) {
+        final category = _categories[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: ListTile(
+            title: Text(
+              category.name,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            subtitle: category.description != null
+                ? Text(category.description!)
+                : null,
+            trailing: category.createdAt != null
+                ? Text(
+                    'Created: ${_formatDate(category.createdAt!)}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  )
+                : null,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Creates a test category for demonstration purposes
+  Future<void> _createTestCategory() async {
+    try {
+      await _categoryService.createCategory(
+        name: 'Test Category ${DateTime.now().millisecondsSinceEpoch}',
+        description: 'This is a test category',
+      );
+      _loadCategories(); // Reload the list after creating
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error creating category: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// Formats a DateTime object into a readable string
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 } 

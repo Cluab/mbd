@@ -11,14 +11,14 @@ class Category {
   final String? description;
   
   /// Timestamp when the category was created
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   /// Constructor for creating a new Category instance
   Category({
     required this.id,
     required this.name,
     this.description,
-    required this.createdAt,
+    this.createdAt,
   });
 
   /// Creates a Category instance from a JSON map.
@@ -28,7 +28,7 @@ class Category {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
     );
   }
 
@@ -39,7 +39,7 @@ class Category {
       'id': id,
       'name': name,
       'description': description,
-      'created_at': createdAt.toIso8601String(),
+      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
     };
   }
 } 

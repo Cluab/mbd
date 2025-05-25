@@ -7,7 +7,7 @@ class CategoryService {
   /// Supabase client instance used for database operations
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// Fetches all categories from Supabase, ordered by creation date (newest first).
+  /// Fetches all categories from Supabase.
   /// Returns a list of Category objects.
   /// Throws an exception if the operation fails.
   Future<List<Category>> getCategories() async {
@@ -15,7 +15,7 @@ class CategoryService {
       final response = await _supabase
           .from('categories')
           .select()
-          .order('created_at', ascending: false);
+          .order('id', ascending: false);
 
       return (response as List)
           .map((category) => Category.fromJson(category))
@@ -55,7 +55,7 @@ class CategoryService {
     try {
       final response = await _supabase.from('categories').insert({
         'name': name,
-        'description': description,
+        if (description != null) 'description': description,
       }).select().single();
 
       return Category.fromJson(response);
