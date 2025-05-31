@@ -69,7 +69,7 @@ class CategoryService {
       // the Supabase client configuration might be different or an older version.
       // Modern Supabase .single() typically throws if not found.
       // For safety, we check for null, though it might be redundant with current Supabase behavior.
-      return Category.fromJson(response as Map<String, dynamic>); // Cast is safe if single() guarantees a map or throws.
+      return Category.fromJson(response); // Cast is safe if single() guarantees a map or throws.
     } on PostgrestException catch (e) {
       // Specifically catch PostgrestException, which Supabase client throws for API errors.
       // If the error indicates no rows were found (PGRST116), it means category doesn't exist.
@@ -119,7 +119,7 @@ class CategoryService {
           .single(); // Expects the single inserted record.
 
       // Convert the JSON response of the new category into a Category object.
-      return Category.fromJson(response as Map<String, dynamic>);
+      return Category.fromJson(response);
     } catch (e) {
       print('Error creating category with name \'$name\': $e');
       rethrow;
